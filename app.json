@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Köməkçim",
+    "slug": "assistant-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Hava proqnozunu göstərmək üçün yerinizə ehtiyacımız var."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "SCHEDULE_EXACT_ALARM",
+        "USE_FULL_SCREEN_INTENT",
+        "VIBRATE",
+        "WAKE_LOCK",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "package": "com.anonymous.assistantapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Hava proqnozunu göstərmək üçün yerinizə ehtiyacımız var."
+        }
+      ],
+      "./plugins/withAlarmAndroidConfig.js"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3a600220-07a8-49c0-acc6-4b6d07e88220"
+      }
+    }
+  }
+}
