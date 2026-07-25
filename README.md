@@ -10,10 +10,12 @@ Bu tətbiq hələ Google Play-də deyil. Yükləmək üçün iki yol var:
 
 ### 1) Hazır APK-nı yükləmək (ən asan yol)
 
-1. Bu linki telefonun brauzerində açın: **https://expo.dev/accounts/ali0066/projects/assistant-app/builds**
-   (siyahıdan ən son, "preview" profilli, uğurlu (yaşıl) build-i seçin)
-2. "Install" / "Download" düyməsinə basın, APK telefona yüklənəcək
-3. Yükləyəndən sonra açın — telefon "naməlum mənbədən quraşdırma" icazəsi istəyə bilər, icazə verin
+1. Bu linki telefonun brauzerində açın (heç bir hesaba giriş lazım deyil):
+   **https://expo.dev/artifacts/eas/8QHoTDn3kmn9pqY1JOvIC7qsfMPiwhVfxaZ6qadRCHk.apk**
+2. APK avtomatik yüklənməyə başlayacaq
+
+> **Qeyd:** Bu link EAS build-in artefaktına aiddir və ~30 gün sonra vaxtı bitir. Vaxtı keçibsə, layihə sahibi yeni `eas build --profile preview --platform android` işlədib təzə link paylaşmalıdır.
+3. Yüklənəndən sonra açın — telefon "naməlum mənbədən quraşdırma" icazəsi istəyə bilər, icazə verin
 4. Quraşdırma bitəndə app-i açın
 
 > **Qeyd:** Android "Play Store xaricindən" APK quraşdırarkən xəbərdarlıq göstərir — bu normaldır, "Yenə də quraşdır" seçin.
