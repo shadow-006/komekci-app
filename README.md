@@ -20,6 +20,17 @@ Bu tətbiq hələ Google Play-də deyil. Yükləmək üçün iki yol var:
 
 > **Qeyd:** Android "Play Store xaricindən" APK quraşdırarkən xəbərdarlıq göstərir — bu normaldır, "Yenə də quraşdır" seçin.
 
+### ⚠️ Vacib: Alarmların tam işləməsi üçün
+
+Quraşdırdıqdan sonra, alarmların vaxtında və etibarlı çalması üçün telefonun ayarlarından **bir dəfəlik** bu icazələri verin:
+
+1. Telefonda **Ayarlar → Tətbiqlər (Apps) → Köməkçim** bölməsinə keçin
+2. **"İcazələr" (Permissions)** altında **Bildirişlərə (Notifications)** icazə verin
+3. **"Xüsusi icazə" / "Special app access"** altında **"Alarmlar və xatırlatıcılar" (Alarms & reminders)** tapıb aktivləşdirin — bu olmadan alarm dəqiq vaxtında çalmaya bilər
+4. Mümkünsə **"Batareya" (Battery)** bölməsindən bu app üçün optimallaşdırmanı söndürün / "Məhdudiyyətsiz" (Unrestricted) seçin — bəzi telefonlar (Xiaomi, Huawei, Samsung və s.) batareya qənaəti səbəbilə arxa fon alarmlarını dayandıra bilir
+
+> Bu addımlar telefonun modelinə görə bir az fərqli yerdə ola bilər, amma adı həmişə "Alarmlar və xatırlatıcılar" / "Alarms & reminders" formasında olur.
+
 ### 2) Özün mənbə koddan qurmaq
 
 Node.js və bir [Expo](https://expo.dev) hesabı lazımdır.
