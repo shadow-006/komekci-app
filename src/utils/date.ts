@@ -15,31 +15,16 @@ export function formatTime(hour: number, minute: number): string {
   return `${h}:${m}`;
 }
 
-const AZ_WEEKDAYS = [
-  'Bazar',
-  'Bazar ertəsi',
-  'Çərşənbə axşamı',
-  'Çərşənbə',
-  'Cümə axşamı',
-  'Cümə',
-  'Şənbə',
-];
+const WEEKDAYS = {
+  az: ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'],
+  en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+};
 
-const AZ_MONTHS = [
-  'Yanvar',
-  'Fevral',
-  'Mart',
-  'Aprel',
-  'May',
-  'İyun',
-  'İyul',
-  'Avqust',
-  'Sentyabr',
-  'Oktyabr',
-  'Noyabr',
-  'Dekabr',
-];
+const MONTHS = {
+  az: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun', 'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+};
 
-export function formatFullDateAz(d: Date = new Date()): string {
-  return `${AZ_WEEKDAYS[d.getDay()]}, ${d.getDate()} ${AZ_MONTHS[d.getMonth()]}`;
+export function formatFullDate(language: 'az' | 'en', d: Date = new Date()): string {
+  return `${WEEKDAYS[language][d.getDay()]}, ${d.getDate()} ${MONTHS[language][d.getMonth()]}`;
 }

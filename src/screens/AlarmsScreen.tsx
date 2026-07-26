@@ -1,10 +1,11 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FlatList, Linking, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { AlarmItem } from '../components/AlarmItem';
 import { Card } from '../components/Card';
 import { useApp } from '../context/AppContext';
-import { colors, radius, spacing, typography } from '../theme';
+import { useSettings } from '../context/SettingsContext';
+import { ThemeColors, radius, spacing, typography } from '../theme';
 import { Alarm } from '../types';
 import {
   cancelAlarmNotification,
@@ -15,6 +16,8 @@ import {
 
 export function AlarmsScreen() {
   const { alarms, addAlarm, updateAlarm, removeAlarm } = useApp();
+  const { colors, t } = useSettings();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
   const [pickerDate, setPickerDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(Platform.OS === 'ios');
   const [label, setLabel] = useState('');
@@ -31,17 +34,13 @@ export function AlarmsScreen() {
       const { granted, canAskAgain: canAsk } = await ensureNotificationPermission();
       setCanAskAgain(canAsk);
       if (!granted) {
-        setError(
-          canAsk
-            ? 'Bildiriş icazəsi verilmədi — alarm zəng edə bilməyəcək.'
-            : 'Bildiriş icazəsi bağlıdır. Telefon ayarlarından bu app üçün bildirişlərə icazə verin.'
-        );
+        setError(canAsk ? t.alarms.permissionDenied : t.alarms.permissionBlocked);
       }
 
       const hour = pickerDate.getHours();
       const minute = pickerDate.getMinutes();
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const trimmedLabel = label.trim() || 'Alarm';
+      const trimmedLabel = label.trim() || t.ring.defaultLabel;
 
       if (granted) {
         await scheduleAlarmNotification(id, trimmedLabel, hour, minute, repeatDaily);
@@ -59,7 +58,7 @@ export function AlarmsScreen() {
       setLabel('');
     } catch (e) {
       console.log('Create alarm error:', e);
-      setError(`Xəta: ${e instanceof Error ? e.message : String(e)}`);
+      setError(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -82,11 +81,7 @@ export function AlarmsScreen() {
       const { granted, canAskAgain: canAsk } = await ensureNotificationPermission();
       setCanAskAgain(canAsk);
       if (!granted) {
-        setError(
-          canAsk
-            ? 'Bildiriş icazəsi verilmədi.'
-            : 'Bildiriş icazəsi bağlıdır. Telefon ayarlarından bu app üçün bildirişlərə icazə verin.'
-        );
+        setError(canAsk ? t.alarms.permissionDenied : t.alarms.permissionBlocked);
         return;
       }
       await scheduleTestNotification();
@@ -94,7 +89,7 @@ export function AlarmsScreen() {
       setTimeout(() => setTestSent(false), 10000);
     } catch (e) {
       console.log('Test alarm error:', e);
-      setError(`Xəta: ${e instanceof Error ? e.message : String(e)}`);
+      setError(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -105,7 +100,7 @@ export function AlarmsScreen() {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Alarmlar</Text>
+      <Text style={styles.title}>{t.alarms.title}</Text>
 
       <Card style={styles.addCard}>
         {Platform.OS === 'android' && (
@@ -129,20 +124,20 @@ export function AlarmsScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Alarm adı (məs: Oyanış)"
+          placeholder={t.alarms.namePlaceholder}
           placeholderTextColor={colors.textMuted}
           value={label}
           onChangeText={setLabel}
         />
 
         <View style={styles.repeatRow}>
-          <Text style={styles.repeatLabel}>Hər gün təkrarla</Text>
+          <Text style={styles.repeatLabel}>{t.alarms.repeatDaily}</Text>
           <TouchableOpacity
             style={[styles.repeatToggle, repeatDaily && styles.repeatToggleActive]}
             onPress={() => setRepeatDaily((r) => !r)}
           >
             <Text style={[styles.repeatToggleText, repeatDaily && styles.repeatToggleTextActive]}>
-              {repeatDaily ? 'Bəli' : 'Xeyr'}
+              {repeatDaily ? t.alarms.yes : t.alarms.no}
             </Text>
           </TouchableOpacity>
         </View>
@@ -152,138 +147,140 @@ export function AlarmsScreen() {
             <Text style={styles.error}>{error}</Text>
             {!canAskAgain && (
               <TouchableOpacity onPress={() => Linking.openSettings()}>
-                <Text style={styles.settingsLink}>Ayarlara get →</Text>
+                <Text style={styles.settingsLink}>{t.alarms.openSettings}</Text>
               </TouchableOpacity>
             )}
           </View>
         )}
 
         <TouchableOpacity style={styles.createBtn} onPress={createAlarm}>
-          <Text style={styles.createBtnText}>Alarm qur</Text>
+          <Text style={styles.createBtnText}>{t.alarms.create}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.testBtn} onPress={sendTestNotification}>
-          <Text style={styles.testBtnText}>{testSent ? '✓ 8 saniyəyə real alarm çalacaq…' : 'Alarmı test et (8 san)'}</Text>
+          <Text style={styles.testBtnText}>{testSent ? t.alarms.testSent : t.alarms.test}</Text>
         </TouchableOpacity>
       </Card>
 
       <FlatList
         data={sorted}
-        keyExtractor={(a) => a.id}
+        keyExtractor={(alarm) => alarm.id}
         renderItem={({ item }) => <AlarmItem alarm={item} onToggle={toggleAlarm} onRemove={deleteAlarm} />}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<Text style={styles.empty}>Hələ alarm yoxdur.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t.alarms.noAlarms}</Text>}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.page,
-    paddingTop: spacing.lg,
-  },
-  title: {
-    ...typography.hero,
-    color: colors.textPrimary,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  addCard: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  timeBtn: {
-    alignSelf: 'center',
-    marginBottom: spacing.md,
-  },
-  timeBtnText: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: colors.blue,
-  },
-  input: {
-    backgroundColor: colors.page,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    ...typography.body,
-    color: colors.textPrimary,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    marginTop: spacing.sm,
-  },
-  repeatRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: spacing.md,
-  },
-  repeatLabel: {
-    ...typography.body,
-    color: colors.textSecondary,
-  },
-  repeatToggle: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-  },
-  repeatToggleActive: {
-    backgroundColor: colors.blue,
-    borderColor: colors.blue,
-  },
-  repeatToggleText: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  repeatToggleTextActive: {
-    color: colors.white,
-  },
-  error: {
-    ...typography.tiny,
-    color: colors.critical,
-    marginTop: spacing.sm,
-  },
-  settingsLink: {
-    ...typography.tiny,
-    color: colors.blue,
-    fontWeight: '700',
-    marginTop: spacing.xs,
-  },
-  createBtn: {
-    marginTop: spacing.lg,
-    backgroundColor: colors.blue,
-    borderRadius: radius.md,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  createBtnText: {
-    color: colors.white,
-    ...typography.body,
-    fontWeight: '700',
-  },
-  testBtn: {
-    marginTop: spacing.sm,
-    paddingVertical: spacing.sm,
-    alignItems: 'center',
-  },
-  testBtnText: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  list: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl,
-  },
-  empty: {
-    ...typography.caption,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: spacing.xl,
-  },
-});
+function makeStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.page,
+      paddingTop: spacing.lg,
+    },
+    title: {
+      ...typography.hero,
+      color: colors.textPrimary,
+      paddingHorizontal: spacing.lg,
+      marginBottom: spacing.md,
+    },
+    addCard: {
+      marginHorizontal: spacing.lg,
+      marginBottom: spacing.md,
+    },
+    timeBtn: {
+      alignSelf: 'center',
+      marginBottom: spacing.md,
+    },
+    timeBtnText: {
+      fontSize: 40,
+      fontWeight: '700',
+      color: colors.blue,
+    },
+    input: {
+      backgroundColor: colors.page,
+      borderRadius: radius.md,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      ...typography.body,
+      color: colors.textPrimary,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.border,
+      marginTop: spacing.sm,
+    },
+    repeatRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: spacing.md,
+    },
+    repeatLabel: {
+      ...typography.body,
+      color: colors.textSecondary,
+    },
+    repeatToggle: {
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+      borderRadius: radius.pill,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.border,
+    },
+    repeatToggleActive: {
+      backgroundColor: colors.blue,
+      borderColor: colors.blue,
+    },
+    repeatToggleText: {
+      ...typography.caption,
+      color: colors.textSecondary,
+      fontWeight: '600',
+    },
+    repeatToggleTextActive: {
+      color: colors.white,
+    },
+    error: {
+      ...typography.tiny,
+      color: colors.critical,
+      marginTop: spacing.sm,
+    },
+    settingsLink: {
+      ...typography.tiny,
+      color: colors.blue,
+      fontWeight: '700',
+      marginTop: spacing.xs,
+    },
+    createBtn: {
+      marginTop: spacing.lg,
+      backgroundColor: colors.blue,
+      borderRadius: radius.md,
+      paddingVertical: spacing.sm,
+      alignItems: 'center',
+    },
+    createBtnText: {
+      color: colors.white,
+      ...typography.body,
+      fontWeight: '700',
+    },
+    testBtn: {
+      marginTop: spacing.sm,
+      paddingVertical: spacing.sm,
+      alignItems: 'center',
+    },
+    testBtnText: {
+      ...typography.caption,
+      color: colors.textSecondary,
+      fontWeight: '600',
+    },
+    list: {
+      paddingHorizontal: spacing.lg,
+      paddingBottom: spacing.xxl,
+    },
+    empty: {
+      ...typography.caption,
+      color: colors.textMuted,
+      textAlign: 'center',
+      marginTop: spacing.xl,
+    },
+  });
+}

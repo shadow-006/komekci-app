@@ -1,38 +1,41 @@
+import { Language } from '../i18n/translations';
 import { WeatherSnapshot } from '../types';
 
-// WMO weather codes -> short Azerbaijani description + icon
-const WMO: Record<number, { label: string; icon: string }> = {
-  0: { label: 'Açıq hava', icon: '☀️' },
-  1: { label: 'Əsasən açıq', icon: '🌤️' },
-  2: { label: 'Yarımbuludlu', icon: '⛅' },
-  3: { label: 'Buludlu', icon: '☁️' },
-  45: { label: 'Duman', icon: '🌫️' },
-  48: { label: 'Şaxtalı duman', icon: '🌫️' },
-  51: { label: 'Yüngül çiskin', icon: '🌦️' },
-  53: { label: 'Çiskin', icon: '🌦️' },
-  55: { label: 'Sıx çiskin', icon: '🌦️' },
-  61: { label: 'Yüngül yağış', icon: '🌧️' },
-  63: { label: 'Yağış', icon: '🌧️' },
-  65: { label: 'Güclü yağış', icon: '🌧️' },
-  71: { label: 'Yüngül qar', icon: '🌨️' },
-  73: { label: 'Qar', icon: '🌨️' },
-  75: { label: 'Güclü qar', icon: '❄️' },
-  80: { label: 'Sağanaq', icon: '🌦️' },
-  81: { label: 'Güclü sağanaq', icon: '🌧️' },
-  82: { label: 'Şiddətli sağanaq', icon: '⛈️' },
-  95: { label: 'Tufan', icon: '⛈️' },
-  96: { label: 'Dolulu tufan', icon: '⛈️' },
-  99: { label: 'Şiddətli dolulu tufan', icon: '⛈️' },
+// WMO weather codes -> description (per language) + icon
+const WMO: Record<number, { az: string; en: string; icon: string }> = {
+  0: { az: 'Açıq hava', en: 'Clear sky', icon: '☀️' },
+  1: { az: 'Əsasən açıq', en: 'Mostly clear', icon: '🌤️' },
+  2: { az: 'Yarımbuludlu', en: 'Partly cloudy', icon: '⛅' },
+  3: { az: 'Buludlu', en: 'Cloudy', icon: '☁️' },
+  45: { az: 'Duman', en: 'Fog', icon: '🌫️' },
+  48: { az: 'Şaxtalı duman', en: 'Rime fog', icon: '🌫️' },
+  51: { az: 'Yüngül çiskin', en: 'Light drizzle', icon: '🌦️' },
+  53: { az: 'Çiskin', en: 'Drizzle', icon: '🌦️' },
+  55: { az: 'Sıx çiskin', en: 'Dense drizzle', icon: '🌦️' },
+  61: { az: 'Yüngül yağış', en: 'Light rain', icon: '🌧️' },
+  63: { az: 'Yağış', en: 'Rain', icon: '🌧️' },
+  65: { az: 'Güclü yağış', en: 'Heavy rain', icon: '🌧️' },
+  71: { az: 'Yüngül qar', en: 'Light snow', icon: '🌨️' },
+  73: { az: 'Qar', en: 'Snow', icon: '🌨️' },
+  75: { az: 'Güclü qar', en: 'Heavy snow', icon: '❄️' },
+  80: { az: 'Sağanaq', en: 'Rain showers', icon: '🌦️' },
+  81: { az: 'Güclü sağanaq', en: 'Heavy showers', icon: '🌧️' },
+  82: { az: 'Şiddətli sağanaq', en: 'Violent showers', icon: '⛈️' },
+  95: { az: 'Tufan', en: 'Thunderstorm', icon: '⛈️' },
+  96: { az: 'Dolulu tufan', en: 'Thunderstorm w/ hail', icon: '⛈️' },
+  99: { az: 'Şiddətli dolulu tufan', en: 'Severe thunderstorm', icon: '⛈️' },
 };
 
-export function describeWeatherCode(code: number): { label: string; icon: string } {
-  return WMO[code] ?? { label: 'Naməlum', icon: '🌡️' };
+export function describeWeatherCode(code: number, language: Language): { label: string; icon: string } {
+  const entry = WMO[code];
+  if (!entry) return { label: language === 'az' ? 'Naməlum' : 'Unknown', icon: '🌡️' };
+  return { label: entry[language], icon: entry.icon };
 }
 
 export async function fetchWeather(lat: number, lon: number): Promise<Omit<WeatherSnapshot, 'city' | 'updatedAt'>> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Hava məlumatı alınmadı');
+  if (!res.ok) throw new Error('Weather fetch failed');
   const json = await res.json();
   return {
     tempC: Math.round(json.current.temperature_2m),

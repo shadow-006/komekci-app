@@ -44,7 +44,8 @@
           "locationWhenInUsePermission": "Hava proqnozunu göstərmək üçün yerinizə ehtiyacımız var."
         }
       ],
-      "./plugins/withAlarmAndroidConfig.js"
+      "./plugins/withAlarmAndroidConfig.js",
+      "expo-audio"
     ],
     "extra": {
       "eas": {

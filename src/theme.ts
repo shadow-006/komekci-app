@@ -1,9 +1,7 @@
-export const colors = {
+export const lightColors = {
   // surfaces
   page: '#f9f9f7',
   card: '#fcfcfb',
-  cardDark: '#1a1a19',
-  pageDark: '#0d0d0d',
 
   // ink
   textPrimary: '#0b0b0b',
@@ -32,6 +30,40 @@ export const colors = {
 
   white: '#ffffff',
 };
+
+export const darkColors = {
+  page: '#0d0d0d',
+  card: '#1a1a19',
+
+  textPrimary: '#ffffff',
+  textSecondary: '#c3c2b7',
+  textMuted: '#898781',
+  border: 'rgba(255,255,255,0.10)',
+
+  blue: '#3987e5',
+  orange: '#d95926',
+  aqua: '#199e70',
+  yellow: '#c98500',
+  magenta: '#d55181',
+  violet: '#9085e9',
+
+  blue100: '#184f95',
+  blue300: '#2a78d6',
+  blue500: '#6da7ec',
+
+  good: '#0ca30c',
+  warning: '#fab219',
+  serious: '#ec835a',
+  critical: '#e66767',
+
+  white: '#ffffff',
+};
+
+export type ThemeColors = typeof lightColors;
+
+// Backwards-compatible static export (light palette) for any code that hasn't
+// migrated to useTheme() yet.
+export const colors = lightColors;
 
 export const spacing = {
   xs: 4,

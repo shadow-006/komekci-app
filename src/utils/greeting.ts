@@ -1,6 +1,8 @@
-export function greetingForHour(hour: number): string {
-  if (hour < 6) return 'Sağlam gecə';
-  if (hour < 12) return 'Sabahınız xeyir';
-  if (hour < 18) return 'Gününüz xeyir';
-  return 'Axşamınız xeyir';
+import { TranslationDict } from '../i18n/translations';
+
+export function greetingForHour(hour: number, t: TranslationDict): string {
+  if (hour < 6) return t.greeting.night;
+  if (hour < 12) return t.greeting.morning;
+  if (hour < 18) return t.greeting.day;
+  return t.greeting.evening;
 }

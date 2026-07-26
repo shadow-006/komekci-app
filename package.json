@@ -10,6 +10,7 @@
     "@react-navigation/bottom-tabs": "^7.18.14",
     "@react-navigation/native": "^7.3.14",
     "expo": "^54.0.0",
+    "expo-audio": "~1.1.1",
     "expo-dev-client": "~6.0.21",
     "expo-haptics": "~15.0.8",
     "expo-location": "~19.0.8",

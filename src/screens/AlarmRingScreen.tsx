@@ -1,7 +1,11 @@
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../theme';
+import { useSettings } from '../context/SettingsContext';
+import { radius, spacing, typography } from '../theme';
 import { formatTime } from '../utils/date';
+
+const alarmSound = require('../../assets/sounds/alarm.wav');
 
 type Props = {
   visible: boolean;
@@ -11,8 +15,10 @@ type Props = {
 };
 
 export function AlarmRingScreen({ visible, label, onStop, onSnooze }: Props) {
+  const { t } = useSettings();
   const [now, setNow] = useState(new Date());
   const pulse = useRef(new Animated.Value(1)).current;
+  const player = useAudioPlayer(alarmSound);
 
   useEffect(() => {
     if (!visible) return;
@@ -32,19 +38,40 @@ export function AlarmRingScreen({ visible, label, onStop, onSnooze }: Props) {
     return () => loop.stop();
   }, [visible, pulse]);
 
+  // Play via the media stream (bypasses the phone's ringer/silent switch) and
+  // loop it continuously until the user stops or snoozes the alarm.
+  useEffect(() => {
+    if (!visible) {
+      player.pause();
+      return;
+    }
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: 'duckOthers',
+    }).catch(() => {});
+    player.loop = true;
+    player.volume = 1;
+    player.seekTo(0);
+    player.play();
+    return () => {
+      player.pause();
+    };
+  }, [visible, player]);
+
   return (
     <Modal visible={visible} animationType="fade" statusBarTranslucent presentationStyle="fullScreen">
       <View style={styles.screen}>
         <Animated.Text style={[styles.icon, { transform: [{ scale: pulse }] }]}>⏰</Animated.Text>
         <Text style={styles.time}>{formatTime(now.getHours(), now.getMinutes())}</Text>
-        <Text style={styles.label}>{label || 'Alarm'}</Text>
+        <Text style={styles.label}>{label || t.ring.defaultLabel}</Text>
 
         <View style={styles.buttons}>
           <TouchableOpacity style={styles.snoozeBtn} onPress={onSnooze}>
-            <Text style={styles.snoozeBtnText}>Təxirə sal (5 dəq)</Text>
+            <Text style={styles.snoozeBtnText}>{t.ring.snooze}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.stopBtn} onPress={onStop}>
-            <Text style={styles.stopBtnText}>Dayandır</Text>
+            <Text style={styles.stopBtnText}>{t.ring.stop}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -55,7 +82,7 @@ export function AlarmRingScreen({ visible, label, onStop, onSnooze }: Props) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.textPrimary,
+    backgroundColor: '#0b0b0b',
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.xl,
@@ -67,11 +94,11 @@ const styles = StyleSheet.create({
   time: {
     ...typography.hero,
     fontSize: 56,
-    color: colors.white,
+    color: '#ffffff',
   },
   label: {
     ...typography.h1,
-    color: colors.white,
+    color: '#ffffff',
     opacity: 0.8,
     marginTop: spacing.sm,
     marginBottom: spacing.xxl,
@@ -88,20 +115,20 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.white,
+    borderColor: '#ffffff',
   },
   snoozeBtnText: {
-    color: colors.white,
+    color: '#ffffff',
     ...typography.h2,
   },
   stopBtn: {
     paddingVertical: spacing.md,
     borderRadius: radius.lg,
     alignItems: 'center',
-    backgroundColor: colors.critical,
+    backgroundColor: '#d03b3b',
   },
   stopBtnText: {
-    color: colors.white,
+    color: '#ffffff',
     ...typography.h2,
     fontWeight: '700',
   },

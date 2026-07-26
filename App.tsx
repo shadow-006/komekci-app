@@ -6,14 +6,15 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from './src/context/AppContext';
+import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 import { AlarmRingScreen } from './src/screens/AlarmRingScreen';
 import { AlarmsScreen } from './src/screens/AlarmsScreen';
 import { BudgetScreen } from './src/screens/BudgetScreen';
 import { HealthScreen } from './src/screens/HealthScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { MorningSummaryScreen } from './src/screens/MorningSummaryScreen';
+import { SettingsScreen } from './src/screens/SettingsScreen';
 import { TasksScreen } from './src/screens/TasksScreen';
-import { colors } from './src/theme';
 import {
   SNOOZE_ACTION_ID,
   STOP_ACTION_ID,
@@ -24,16 +25,18 @@ import {
 const Tab = createBottomTabNavigator();
 
 const ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
-  Ana: 'home',
-  Büdcə: 'wallet',
-  Planlama: 'calendar',
-  Sağlamlıq: 'water',
-  Alarmlar: 'alarm',
+  Home: 'home',
+  Budget: 'wallet',
+  Planning: 'calendar',
+  Health: 'water',
+  Alarms: 'alarm',
+  Settings: 'settings',
 };
 
 type RingingAlarm = { id: string; label: string };
 
-export default function App() {
+function AppContent() {
+  const { colors, t, isDark } = useSettings();
   const [ringingAlarm, setRingingAlarm] = useState<RingingAlarm | null>(null);
   const [showSummary, setShowSummary] = useState(false);
 
@@ -79,40 +82,49 @@ export default function App() {
   }, [ringingAlarm]);
 
   return (
+    <AppProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarActiveTintColor: colors.blue,
+            tabBarInactiveTintColor: colors.textMuted,
+            tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
+            tabBarIcon: ({ color, size, focused }) => {
+              const base = ICONS[route.name];
+              const name = (focused ? base : `${String(base)}-outline`) as keyof typeof Ionicons.glyphMap;
+              return <Ionicons name={name} color={color} size={size} />;
+            },
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: t.tabs.home }} />
+          <Tab.Screen name="Budget" component={BudgetScreen} options={{ tabBarLabel: t.tabs.budget }} />
+          <Tab.Screen name="Planning" component={TasksScreen} options={{ tabBarLabel: t.tabs.planning }} />
+          <Tab.Screen name="Health" component={HealthScreen} options={{ tabBarLabel: t.tabs.health }} />
+          <Tab.Screen name="Alarms" component={AlarmsScreen} options={{ tabBarLabel: t.tabs.alarms }} />
+          <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: t.tabs.settings }} />
+        </Tab.Navigator>
+      </NavigationContainer>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+
+      <AlarmRingScreen
+        visible={!!ringingAlarm}
+        label={ringingAlarm?.label ?? ''}
+        onStop={handleStop}
+        onSnooze={handleSnooze}
+      />
+
+      <MorningSummaryScreen visible={showSummary} onClose={() => setShowSummary(false)} />
+    </AppProvider>
+  );
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <AppProvider>
-        <NavigationContainer>
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              headerShown: false,
-              tabBarActiveTintColor: colors.blue,
-              tabBarInactiveTintColor: colors.textMuted,
-              tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
-              tabBarIcon: ({ color, size, focused }) => {
-                const base = ICONS[route.name];
-                const name = (focused ? base : `${String(base)}-outline`) as keyof typeof Ionicons.glyphMap;
-                return <Ionicons name={name} color={color} size={size} />;
-              },
-            })}
-          >
-            <Tab.Screen name="Ana" component={HomeScreen} />
-            <Tab.Screen name="Büdcə" component={BudgetScreen} />
-            <Tab.Screen name="Planlama" component={TasksScreen} />
-            <Tab.Screen name="Sağlamlıq" component={HealthScreen} />
-            <Tab.Screen name="Alarmlar" component={AlarmsScreen} />
-          </Tab.Navigator>
-        </NavigationContainer>
-        <StatusBar style="dark" />
-
-        <AlarmRingScreen
-          visible={!!ringingAlarm}
-          label={ringingAlarm?.label ?? ''}
-          onStop={handleStop}
-          onSnooze={handleSnooze}
-        />
-
-        <MorningSummaryScreen visible={showSummary} onClose={() => setShowSummary(false)} />
-      </AppProvider>
+      <SettingsProvider>
+        <AppContent />
+      </SettingsProvider>
     </SafeAreaProvider>
   );
 }
