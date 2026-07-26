@@ -1,6 +1,6 @@
 # Köməkçim 📱
 
-Gündəlik həyatı asanlaşdıran şəxsi köməkçi mobil tətbiqi — tapşırıq planlaması, büdcə izləmə, su/kalori hesabı, hava proqnozu və real alarm-saat funksiyası bir yerdə.
+Gündəlik həyatı asanlaşdıran şəxsi köməkçi mobil tətbiqi — tapşırıq planlaması, büdcə izləmə, su/kalori hesabı (tarixçə ilə), hava proqnozu və real alarm-saat funksiyası bir yerdə. Azərbaycanca/English dil dəyişimi və Dark mode dəstəyi var.
 
 Android üçün React Native (Expo) ilə hazırlanıb.
 
@@ -11,10 +11,10 @@ Bu tətbiq hələ Google Play-də deyil. Yükləmək üçün iki yol var:
 ### 1) Hazır APK-nı yükləmək (ən asan yol)
 
 1. Bu linki telefonun brauzerində açın (heç bir hesaba giriş lazım deyil):
-   **https://expo.dev/artifacts/eas/8QHoTDn3kmn9pqY1JOvIC7qsfMPiwhVfxaZ6qadRCHk.apk**
+   **https://expo.dev/artifacts/eas/xNJ8aifU33-nDactZ6zp7sAV3uOB3q0qZd3F7-THGXs.apk**
 2. APK avtomatik yüklənməyə başlayacaq
 
-> **Qeyd:** Bu link EAS build-in artefaktına aiddir və ~30 gün sonra vaxtı bitir. Vaxtı keçibsə, layihə sahibi yeni `eas build --profile preview --platform android` işlədib təzə link paylaşmalıdır.
+> **Qeyd:** Bu link EAS build-in artefaktına aiddir və ~2 həftə sonra (2026-08-09) vaxtı bitir. Vaxtı keçibsə, layihə sahibi yeni `eas build --profile preview --platform android` işlədib təzə link paylaşmalıdır.
 3. Yüklənəndən sonra açın — telefon "naməlum mənbədən quraşdırma" icazəsi istəyə bilər, icazə verin
 4. Quraşdırma bitəndə app-i açın
 
@@ -35,7 +35,7 @@ Build bitəndə (~10-15 dəqiqə) çıxan linki telefonda açıb quraşdırın.
 
 ## 📱 Necə istifadə etmək olar
 
-Tətbiqin aşağıda 5 bölməsi (tab) var:
+Tətbiqin aşağıda 6 bölməsi (tab) var:
 
 ### 🏠 Ana
 Açılış ekranı — salamlama, o anki hava dərəcəsi (yerinizə görə avtomatik), su/kalori mini-göstəriciləri və bugünkü tapşırıqlarınız. Yuxarıdan birbaşa yeni tapşırıq əlavə edə bilərsiniz.
@@ -53,20 +53,26 @@ Açılış ekranı — salamlama, o anki hava dərəcəsi (yerinizə görə avto
 ### 💧 Sağlamlıq
 - Su və kalori üçün sürətli düymələr (+100, +250, +500)
 - Öz gündəlik hədəflərinizi təyin edin
-- Hər gün avtomatik sıfırlanır, istəsəniz əl ilə də sıfırlaya bilərsiniz
+- Hər gün avtomatik sıfırlanır (yeni tarix başlayanda hesab 0-dan başlayır), istəsəniz əl ilə də sıfırlaya bilərsiniz
+- Aşağıda **Tarixçə** bölməsində keçmiş günlərin su/kalori qeydlərini görə bilərsiniz
 
 ### ⏰ Alarmlar
 - Vaxt seçin, ad yazın, "Hər gün təkrarla" seçimini edin → **Alarm qur**
-- Vaxtı çatanda tam-ekran, davamlı zəng çalır (telefon səssiz rejimdə olsa belə)
+- Vaxtı çatanda tam-ekran, davamlı zəng çalır — **telefon səssiz/vibrasiya rejimində olsa belə eşidilir**
 - **Dayandır** basanda o günün tapşırıqları dərhal sizə göstərilir
 - **Təxirə sal** ilə 5 dəqiqəyə təxirə sala bilərsiniz
+
+### ⚙️ Ayarlar
+- **Dil:** Azərbaycanca / English arasında keçid — bütün tətbiq dərhal tərcümə olunur
+- **Görünüş:** İşıqlı / Qaranlıq (Dark mode) / Sistem (telefonun öz ayarına uyğun)
 
 ## 🛠️ Texniki qeydlər (developerlər üçün)
 
 - **Stack:** Expo SDK 54, React Native 0.81, TypeScript
-- **Alarm sistemi:** `@notifee/react-native` (tam-ekran + `AlarmManager.setAlarmClock`)
+- **Alarm sistemi:** `@notifee/react-native` (tam-ekran + `AlarmManager.setAlarmClock`) + `expo-audio` (media stream üzərindən davamlı səs — səssiz rejimi bypass etmək üçün)
 - **Data saxlama:** Tamamilə lokal (`AsyncStorage`), internet lazım deyil
 - **Hava:** [Open-Meteo](https://open-meteo.com) API (pulsuz, açar tələb etmir) + `expo-location`
+- **Dil/tema:** Xüsusi i18n sistemi (AZ/EN) + işıqlı/qaranlıq palitra, `SettingsContext` vasitəsilə idarə olunur
 
 ### Development build ilə işə salmaq
 
