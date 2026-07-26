@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
 import { ProgressBar } from '../components/ProgressBar';
 import { SectionHeader } from '../components/SectionHeader';
@@ -15,6 +16,7 @@ export function HealthScreen() {
   const { todayLog, dayLogs, goals, addWater, addCalories, resetToday, updateGoals } = useApp();
   const { colors, t } = useSettings();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const insets = useSafeAreaInsets();
   const [waterGoalDraft, setWaterGoalDraft] = useState(String(goals.waterGoalMl));
   const [calorieGoalDraft, setCalorieGoalDraft] = useState(String(goals.calorieGoalKcal));
 
@@ -36,7 +38,7 @@ export function HealthScreen() {
   };
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}>
       <Text style={styles.title}>{t.health.title}</Text>
 
       <Card style={{ marginTop: spacing.lg }}>

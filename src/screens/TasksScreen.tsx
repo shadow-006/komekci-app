@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TaskItem } from '../components/TaskItem';
 import { useApp } from '../context/AppContext';
 import { useSettings } from '../context/SettingsContext';
@@ -20,6 +21,7 @@ export function TasksScreen() {
   const { tasks, addTask, toggleTask, removeTask } = useApp();
   const { colors, t, language } = useSettings();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState('');
   const today = todayKey();
   const [selectedDate, setSelectedDate] = useState(today);
@@ -78,7 +80,7 @@ export function TasksScreen() {
   );
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top + spacing.md }]}>
       <View style={styles.header}>
         <Text style={styles.title}>{t.planning.title}</Text>
       </View>

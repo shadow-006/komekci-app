@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
 import { ProgressBar } from '../components/ProgressBar';
 import { SectionHeader } from '../components/SectionHeader';
@@ -13,6 +14,7 @@ export function BudgetScreen() {
   const { budgetEntries, addBudgetEntry, removeBudgetEntry, monthlyBudgetGoal, updateMonthlyBudgetGoal } = useApp();
   const { colors, t } = useSettings();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const insets = useSafeAreaInsets();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('expense');
@@ -66,7 +68,7 @@ export function BudgetScreen() {
   return (
     <FlatList
       style={styles.screen}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}
       data={monthEntries}
       keyExtractor={(entry) => entry.id}
       renderItem={renderItem}

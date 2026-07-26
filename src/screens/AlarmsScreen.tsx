@@ -1,6 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Linking, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AlarmItem } from '../components/AlarmItem';
 import { Card } from '../components/Card';
 import { useApp } from '../context/AppContext';
@@ -18,6 +19,7 @@ export function AlarmsScreen() {
   const { alarms, addAlarm, updateAlarm, removeAlarm } = useApp();
   const { colors, t } = useSettings();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const insets = useSafeAreaInsets();
   const [pickerDate, setPickerDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(Platform.OS === 'ios');
   const [label, setLabel] = useState('');
@@ -99,7 +101,7 @@ export function AlarmsScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top + spacing.md }]}>
       <Text style={styles.title}>{t.alarms.title}</Text>
 
       <Card style={styles.addCard}>

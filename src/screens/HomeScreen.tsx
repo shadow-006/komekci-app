@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
 import { ProgressBar } from '../components/ProgressBar';
 import { SectionHeader } from '../components/SectionHeader';
@@ -16,6 +17,7 @@ export function HomeScreen() {
   const { tasks, addTask, toggleTask, removeTask, todayLog, goals } = useApp();
   const { colors, t, language } = useSettings();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const insets = useSafeAreaInsets();
   const weather = useWeather();
   const [draft, setDraft] = useState('');
 
@@ -37,7 +39,7 @@ export function HomeScreen() {
   };
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}>
       <Text style={styles.greeting}>{greetingForHour(new Date().getHours(), t)} 👋</Text>
       <Text style={styles.date}>{formatFullDate(language)}</Text>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
 import { SectionHeader } from '../components/SectionHeader';
 import { ThemeMode, useSettings } from '../context/SettingsContext';
@@ -9,6 +10,7 @@ import { radius, spacing, typography } from '../theme';
 export function SettingsScreen() {
   const { colors, t, language, setLanguage, themeMode, setThemeMode } = useSettings();
   const styles = makeStyles(colors);
+  const insets = useSafeAreaInsets();
 
   const languageOptions: { value: Language; label: string }[] = [
     { value: 'az', label: 'Azərbaycanca' },
@@ -22,7 +24,7 @@ export function SettingsScreen() {
   ];
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.md }]}>
       <Text style={styles.title}>{t.settings.title}</Text>
 
       <Card style={{ marginTop: spacing.lg }}>
